@@ -75,11 +75,21 @@ describe("detectSandbox", () => {
   });
 
   it("requires every condition in an AND group", () => {
-    const result = detectSandbox({ env: { SHELL: "/bin/jsh" } });
-    expect(result.sandbox?.id).toBe("stackblitz");
+    const sandboxes = [
+      {
+        id: "and-group",
+        name: "AND Group",
+        category: "ai-sandbox" as const,
+        env: [[{ name: "MARKER_A" }, { name: "MARKER_B", value: "yes" }]],
+        verified: true,
+      },
+    ];
+    const both = detectSandbox({ env: { MARKER_A: "1", MARKER_B: "yes" }, sandboxes });
+    expect(both.sandbox?.id).toBe("and-group");
+    expect(both.sandbox?.evidence).toHaveLength(2);
 
-    const noMatch = detectSandbox({ env: { SHELL: "/bin/zsh" } });
-    expect(noMatch.detected).toBe(false);
+    expect(detectSandbox({ env: { MARKER_A: "1" }, sandboxes }).detected).toBe(false);
+    expect(detectSandbox({ env: { MARKER_A: "1", MARKER_B: "no" }, sandboxes }).detected).toBe(false);
   });
 
   it("reports all matches, most specific first", () => {
@@ -99,13 +109,10 @@ describe("detectSandbox", () => {
     expect(result.matches[1]?.instanceId).toBe("sbx_1");
   });
 
-  it("never matches definitions with no known markers", () => {
-    const pending = defaultSandboxes.filter((s) => s.env.length === 0);
-    expect(pending.length).toBeGreaterThan(0);
-    const env = { LOVABLE: "true", V0: "1", VERCEL: "1" };
-    const result = detectSandbox({ env });
-    for (const match of result.matches) {
-      expect(pending.map((s) => s.id)).not.toContain(match.id);
+  it("every built-in definition is verified and has markers", () => {
+    for (const sandbox of defaultSandboxes) {
+      expect(sandbox.verified, sandbox.id).toBe(true);
+      expect(sandbox.env.length, sandbox.id).toBeGreaterThan(0);
     }
   });
 

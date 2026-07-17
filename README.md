@@ -1,6 +1,6 @@
 # sandbox-cli-detector
 
-Detect whether your CLI is running inside a sandboxed environment — an AI code-execution sandbox (E2B, Vercel Sandbox, Daytona, Modal, ...), an AI app builder (Replit, bolt.new, ...), or a cloud development environment (Codespaces, Gitpod, ...).
+Detect whether your CLI is running inside a sandboxed environment — an AI code-execution sandbox (E2B, Vercel Sandbox, Daytona, Modal, ...), an AI app builder (Replit, bolt.new, Rork, ...), or a cloud development environment (Codespaces, CodeSandbox, ...).
 
 Inspired by [ci-info](https://github.com/watson/ci-info) and a companion to [agent-cli-detector](https://github.com/davidmokos/detect-agent): `agent-cli-detector` tells you *which agent* is driving your CLI, this package tells you *where* it is running.
 
@@ -45,43 +45,36 @@ Layered environments are common — an app builder may run its builds inside a g
 
 ## Supported environments
 
-Detection currently relies on environment variables only. ✅ marks markers confirmed inside the real platform, ⚠️ marks markers that still need verification, and ❓ marks environments where no marker is known yet.
+Detection currently relies on environment variables only. Every marker below was confirmed by probing the real platform — no guessed or documentation-only markers.
 
 ### AI code-execution sandboxes
 
-| Sandbox | id | Detection env vars | Status |
-| --- | --- | --- | --- |
-| [E2B](https://e2b.dev) | `e2b` | `E2B_SANDBOX=true` (id: `E2B_SANDBOX_ID`) | ✅ |
-| [Vercel Sandbox](https://vercel.com/docs/sandbox) | `vercel-sandbox` | `HOME=/home/vercel-sandbox` | ✅ |
-| [Daytona](https://daytona.io) | `daytona` | `DAYTONA_SANDBOX_ID` | ✅ |
-| [Modal](https://modal.com) | `modal` | `MODAL_SANDBOX_ID` or `MODAL_TASK_ID` | ✅ |
-| [Cloudflare Sandbox](https://developers.cloudflare.com/sandbox/) | `cloudflare-sandbox` | `CLOUDFLARE_DURABLE_OBJECT_ID` | ✅ |
-| [Morph Cloud](https://cloud.morph.so) | `morph` | unknown | ❓ |
-| [Runloop](https://runloop.ai) | `runloop` | unknown | ❓ |
-| [Fly.io Machines](https://fly.io) | `fly` | `FLY_MACHINE_ID` or `FLY_ALLOC_ID` | ⚠️ documented, unverified |
+| Sandbox | id | Detection env vars |
+| --- | --- | --- |
+| [E2B](https://e2b.dev) | `e2b` | `E2B_SANDBOX=true` (id: `E2B_SANDBOX_ID`) |
+| [Vercel Sandbox](https://vercel.com/docs/sandbox) | `vercel-sandbox` | `HOME=/home/vercel-sandbox` |
+| [Daytona](https://daytona.io) | `daytona` | `DAYTONA_SANDBOX_ID` |
+| [Modal](https://modal.com) | `modal` | `MODAL_SANDBOX_ID` or `MODAL_TASK_ID` |
+| [Cloudflare Sandbox](https://developers.cloudflare.com/sandbox/) | `cloudflare-sandbox` | `CLOUDFLARE_DURABLE_OBJECT_ID` |
 
 ### AI app builders
 
-| Sandbox | id | Detection env vars | Status |
-| --- | --- | --- | --- |
-| [Replit](https://replit.com) | `replit` | `REPLIT_SESSION`, `REPLIT_CONTAINER`, or `REPLIT_USER` | ✅ |
-| [bolt.new](https://bolt.new) | `bolt` | `BOLT_ENV`, `BOLT_ORIGIN`, or `BOLT_SERVER_URL` | ✅ |
-| [Rork](https://rork.com) | `rork` | `RORK_API_URL` (runs on E2B, so `e2b` also matches) | ✅ |
+| Sandbox | id | Detection env vars |
+| --- | --- | --- |
+| [Replit](https://replit.com) | `replit` | `REPLIT_SESSION`, `REPLIT_CONTAINER`, or `REPLIT_USER` |
+| [bolt.new](https://bolt.new) | `bolt` | `BOLT_ENV`, `BOLT_ORIGIN`, or `BOLT_SERVER_URL` |
+| [Rork](https://rork.com) | `rork` | `RORK_API_URL` (runs on E2B, so `e2b` also matches) |
 
 Lovable, v0, and Base44 are intentionally not on the list: they expose no shell, so a CLI can never run inside them.
 
 ### Cloud development environments
 
-| Sandbox | id | Detection env vars | Status |
-| --- | --- | --- | --- |
-| [GitHub Codespaces](https://github.com/features/codespaces) | `codespaces` | `CODESPACES=true` (id: `CODESPACE_NAME`) | ✅ |
-| [Gitpod](https://gitpod.io) | `gitpod` | `GITPOD_WORKSPACE_ID` | ⚠️ |
-| [CodeSandbox](https://codesandbox.io) | `codesandbox` | `CSB=true` or `CSB_SANDBOX_ID` (id: `CSB_SANDBOX_ID`) | ✅ |
-| [StackBlitz WebContainer](https://stackblitz.com) | `stackblitz` | `SHELL=/bin/jsh` (heuristic) | ⚠️ |
-| [Google Cloud Shell](https://cloud.google.com/shell) | `cloud-shell` | `CLOUD_SHELL=true` | ⚠️ |
-| [Coder](https://coder.com) | `coder` | `CODER_WORKSPACE_NAME` | ⚠️ |
+| Sandbox | id | Detection env vars |
+| --- | --- | --- |
+| [GitHub Codespaces](https://github.com/features/codespaces) | `codespaces` | `CODESPACES=true` (id: `CODESPACE_NAME`) |
+| [CodeSandbox](https://codesandbox.io) | `codesandbox` | `CSB=true` or `CSB_SANDBOX_ID` (id: `CSB_SANDBOX_ID`) |
 
-Know an env var for one of the ❓ rows, or can you confirm a ⚠️ one? Please open an issue or PR — the fastest way to check is running `env | sort` (or `npx sandbox-cli-detector`) inside the platform.
+Missing a platform (Morph, Runloop, Gitpod, Cloud Shell, Coder, ...)? Please open an issue or PR with the env vars it sets — the fastest way to check is running `env | sort` (or `npx sandbox-cli-detector --json`) inside it.
 
 ## API
 

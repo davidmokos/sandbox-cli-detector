@@ -8,9 +8,8 @@ import type { SandboxDefinition } from "./types.js";
  * development environments. Detection returns the first match as the primary
  * result but reports all matches.
  *
- * `verified: false` means the env markers are a best guess or entirely
- * unknown (`env: []`) — these still need to be confirmed by running inside
- * the real platform.
+ * Only environments whose markers were confirmed by probing the real
+ * platform are listed — no guessed or documentation-only markers.
  */
 export const defaultSandboxes: readonly SandboxDefinition[] = [
   // ── AI app builders ────────────────────────────────────────────────────
@@ -86,31 +85,6 @@ export const defaultSandboxes: readonly SandboxDefinition[] = [
     idEnv: ["CLOUDFLARE_DURABLE_OBJECT_ID"],
     verified: true,
   },
-  {
-    id: "morph",
-    name: "Morph Cloud",
-    category: "ai-sandbox",
-    // TODO: unknown — needs a probe inside a Morph instance.
-    env: [],
-    verified: false,
-  },
-  {
-    id: "runloop",
-    name: "Runloop",
-    category: "ai-sandbox",
-    // TODO: unknown — needs a probe inside a Runloop devbox.
-    env: [],
-    verified: false,
-  },
-  {
-    id: "fly",
-    name: "Fly.io Machine",
-    category: "ai-sandbox",
-    // Fly Machines runtime env: https://fly.io/docs/machines/runtime-environment/
-    env: [{ name: "FLY_MACHINE_ID" }, { name: "FLY_ALLOC_ID" }],
-    idEnv: ["FLY_MACHINE_ID", "FLY_ALLOC_ID"],
-    verified: false,
-  },
 
   // ── Cloud development environments ─────────────────────────────────────
   {
@@ -122,43 +96,11 @@ export const defaultSandboxes: readonly SandboxDefinition[] = [
     verified: true,
   },
   {
-    id: "gitpod",
-    name: "Gitpod",
-    category: "cloud-ide",
-    env: [{ name: "GITPOD_WORKSPACE_ID" }],
-    idEnv: ["GITPOD_WORKSPACE_ID"],
-    verified: false,
-  },
-  {
     id: "codesandbox",
     name: "CodeSandbox",
     category: "cloud-ide",
     env: [{ name: "CSB", value: "true" }, { name: "CSB_SANDBOX_ID" }],
     idEnv: ["CSB_SANDBOX_ID"],
     verified: true,
-  },
-  {
-    id: "stackblitz",
-    name: "StackBlitz WebContainer",
-    category: "cloud-ide",
-    // TODO: confirm — WebContainers use the jsh shell; no dedicated marker known.
-    env: [[{ name: "SHELL", value: "/bin/jsh" }]],
-    verified: false,
-  },
-  {
-    id: "cloud-shell",
-    name: "Google Cloud Shell",
-    category: "cloud-ide",
-    env: [{ name: "CLOUD_SHELL", value: "true" }],
-    verified: false,
-  },
-  {
-    id: "coder",
-    name: "Coder",
-    category: "cloud-ide",
-    // TODO: confirm — Coder agents export CODER_WORKSPACE_NAME and friends.
-    env: [{ name: "CODER_WORKSPACE_NAME" }],
-    idEnv: ["CODER_WORKSPACE_NAME"],
-    verified: false,
   },
 ];
