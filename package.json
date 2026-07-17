@@ -39,7 +39,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "sandbox-cli-detector": "./dist/cli.js"
+    "sandbox-cli-detector": "dist/cli.js"
   },
   "files": [
     "dist",
