@@ -1,6 +1,6 @@
 {
   "name": "sandbox-cli-detector",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Detect whether a CLI is running inside a sandboxed environment (E2B, Vercel Sandbox, Replit, Daytona, Modal, and more)",
   "keywords": [
     "sandbox",
