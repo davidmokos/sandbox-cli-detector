@@ -8,6 +8,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const require = createRequire(import.meta.url);
+const tsc = require.resolve("typescript/bin/tsc");
 
 // Exercises the actual npm tarball: file list, CJS require, ESM import, and
 // the packaged CLI. Requires `npm run build` first (the test script does it).
@@ -93,7 +94,7 @@ detectSandbox();
     );
 
     execSync("npm install --ignore-scripts", { cwd: consumerDir, stdio: "pipe" });
-    execFileSync(join(rootNodeModules, ".bin", "tsc"), ["-p", "tsconfig.json", "--noEmit"], {
+    execFileSync(process.execPath, [tsc, "-p", "tsconfig.json", "--noEmit"], {
       cwd: consumerDir,
       stdio: "pipe",
     });
