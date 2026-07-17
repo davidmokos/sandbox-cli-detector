@@ -1,6 +1,6 @@
 import { execFileSync, execSync } from "node:child_process";
 import { createRequire } from "node:module";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -15,6 +15,7 @@ describe("packaged tarball", () => {
   let tmp: string;
   let pkgDir: string;
   let packedFiles: string[];
+  let tarballPath: string;
 
   beforeAll(() => {
     tmp = mkdtempSync(join(tmpdir(), "sandbox-cli-detector-pack-"));
@@ -25,7 +26,8 @@ describe("packaged tarball", () => {
     });
     const [info] = JSON.parse(packJson);
     packedFiles = info.files.map((f: { path: string }) => f.path);
-    execSync(`tar -xzf "${join(tmp, info.filename)}" -C "${tmp}"`);
+    tarballPath = join(tmp, info.filename);
+    execSync(`tar -xzf "${tarballPath}" -C "${tmp}"`);
     pkgDir = join(tmp, "package");
   }, 60_000);
 
@@ -58,6 +60,43 @@ describe("packaged tarball", () => {
     expect(typeof cjs.isRunningInSandbox).toBe("function");
     const result = cjs.detectSandbox({ env: { E2B_SANDBOX: "true" } });
     expect(result.sandbox.id).toBe("e2b");
+  });
+
+  it("types the CommonJS entry as CommonJS under module Node16", () => {
+    const consumerDir = join(tmp, "node16-consumer");
+    const rootNodeModules = join(root, "node_modules");
+    mkdirSync(consumerDir);
+    writeFileSync(
+      join(consumerDir, "package.json"),
+      JSON.stringify({ type: "commonjs", dependencies: { "sandbox-cli-detector": tarballPath } })
+    );
+    writeFileSync(
+      join(consumerDir, "tsconfig.json"),
+      JSON.stringify({
+        compilerOptions: {
+          target: "ES2022",
+          module: "Node16",
+          moduleResolution: "Node16",
+          strict: true,
+          skipLibCheck: true,
+          types: ["node"],
+          typeRoots: [join(rootNodeModules, "@types")],
+        },
+        include: ["index.ts"],
+      })
+    );
+    writeFileSync(
+      join(consumerDir, "index.ts"),
+      `const { detectSandbox } = require("sandbox-cli-detector") as typeof import("sandbox-cli-detector");
+detectSandbox();
+`
+    );
+
+    execSync("npm install --ignore-scripts", { cwd: consumerDir, stdio: "pipe" });
+    execFileSync(join(rootNodeModules, ".bin", "tsc"), ["-p", "tsconfig.json", "--noEmit"], {
+      cwd: consumerDir,
+      stdio: "pipe",
+    });
   });
 
   it("works via ESM import", async () => {
