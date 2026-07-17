@@ -25,7 +25,8 @@ describe("packaged tarball", () => {
       cwd: root,
       encoding: "utf8",
     });
-    const [info] = JSON.parse(packJson);
+    const packInfo = JSON.parse(packJson);
+    const info = Array.isArray(packInfo) ? packInfo[0] : packInfo;
     packedFiles = info.files.map((f: { path: string }) => f.path);
     tarballPath = join(tmp, info.filename);
     execSync(`tar -xzf "${tarballPath}" -C "${tmp}"`);
