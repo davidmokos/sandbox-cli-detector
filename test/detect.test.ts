@@ -82,6 +82,15 @@ describe("detectSandbox", () => {
     expect(result.matches.map((m) => m.id)).toEqual(["replit", "modal"]);
   });
 
+  it("reports Rork as primary when running on E2B", () => {
+    const result = detectSandbox({
+      env: { RORK_API_URL: "https://api.rork.com", E2B_SANDBOX: "true", E2B_SANDBOX_ID: "sbx_1" },
+    });
+    expect(result.sandbox?.id).toBe("rork");
+    expect(result.matches.map((m) => m.id)).toEqual(["rork", "e2b"]);
+    expect(result.matches[1]?.instanceId).toBe("sbx_1");
+  });
+
   it("never matches definitions with no known markers", () => {
     const pending = defaultSandboxes.filter((s) => s.env.length === 0);
     expect(pending.length).toBeGreaterThan(0);

@@ -32,6 +32,14 @@ export const defaultSandboxes: readonly SandboxDefinition[] = [
     env: [{ name: "BOLT_ENV" }, { name: "BOLT_ORIGIN" }, { name: "BOLT_SERVER_URL" }],
     verified: true,
   },
+  {
+    id: "rork",
+    name: "Rork",
+    category: "app-builder",
+    // Rork runs on E2B, so e2b also appears in matches.
+    env: [{ name: "RORK_API_URL" }],
+    verified: true,
+  },
 
   // ── AI code-execution sandboxes ────────────────────────────────────────
   {
@@ -111,7 +119,7 @@ export const defaultSandboxes: readonly SandboxDefinition[] = [
     category: "cloud-ide",
     env: [{ name: "CODESPACES", value: "true" }],
     idEnv: ["CODESPACE_NAME"],
-    verified: false,
+    verified: true,
   },
   {
     id: "gitpod",
@@ -151,15 +159,6 @@ export const defaultSandboxes: readonly SandboxDefinition[] = [
     // TODO: confirm — Coder agents export CODER_WORKSPACE_NAME and friends.
     env: [{ name: "CODER_WORKSPACE_NAME" }],
     idEnv: ["CODER_WORKSPACE_NAME"],
-    verified: false,
-  },
-  {
-    id: "firebase-studio",
-    name: "Firebase Studio",
-    category: "cloud-ide",
-    // TODO: confirm — Firebase Studio (formerly Project IDX) is believed to
-    // set MONOSPACE_ENV in its workspaces.
-    env: [{ name: "MONOSPACE_ENV" }],
     verified: false,
   },
 ];

@@ -66,6 +66,7 @@ Detection currently relies on environment variables only. ✅ marks markers conf
 | --- | --- | --- | --- |
 | [Replit](https://replit.com) | `replit` | `REPLIT_SESSION`, `REPLIT_CONTAINER`, or `REPLIT_USER` | ✅ |
 | [bolt.new](https://bolt.new) | `bolt` | `BOLT_ENV`, `BOLT_ORIGIN`, or `BOLT_SERVER_URL` | ✅ |
+| [Rork](https://rork.com) | `rork` | `RORK_API_URL` (runs on E2B, so `e2b` also matches) | ✅ |
 
 Lovable, v0, and Base44 are intentionally not on the list: they expose no shell, so a CLI can never run inside them.
 
@@ -73,13 +74,12 @@ Lovable, v0, and Base44 are intentionally not on the list: they expose no shell,
 
 | Sandbox | id | Detection env vars | Status |
 | --- | --- | --- | --- |
-| [GitHub Codespaces](https://github.com/features/codespaces) | `codespaces` | `CODESPACES=true` (id: `CODESPACE_NAME`) | ⚠️ |
+| [GitHub Codespaces](https://github.com/features/codespaces) | `codespaces` | `CODESPACES=true` (id: `CODESPACE_NAME`) | ✅ |
 | [Gitpod](https://gitpod.io) | `gitpod` | `GITPOD_WORKSPACE_ID` | ⚠️ |
 | [CodeSandbox](https://codesandbox.io) | `codesandbox` | `CSB` or `CODESANDBOX_HOST` | ⚠️ |
 | [StackBlitz WebContainer](https://stackblitz.com) | `stackblitz` | `SHELL=/bin/jsh` (heuristic) | ⚠️ |
 | [Google Cloud Shell](https://cloud.google.com/shell) | `cloud-shell` | `CLOUD_SHELL=true` | ⚠️ |
 | [Coder](https://coder.com) | `coder` | `CODER_WORKSPACE_NAME` | ⚠️ |
-| [Firebase Studio](https://firebase.studio) | `firebase-studio` | `MONOSPACE_ENV` | ⚠️ |
 
 Know an env var for one of the ❓ rows, or can you confirm a ⚠️ one? Please open an issue or PR — the fastest way to check is running `env | sort` (or `npx sandbox-cli-detector`) inside the platform.
 
