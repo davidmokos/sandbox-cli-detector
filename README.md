@@ -76,7 +76,7 @@ Lovable, v0, and Base44 are intentionally not on the list: they expose no shell,
 | --- | --- | --- | --- |
 | [GitHub Codespaces](https://github.com/features/codespaces) | `codespaces` | `CODESPACES=true` (id: `CODESPACE_NAME`) | ✅ |
 | [Gitpod](https://gitpod.io) | `gitpod` | `GITPOD_WORKSPACE_ID` | ⚠️ |
-| [CodeSandbox](https://codesandbox.io) | `codesandbox` | `CSB` or `CODESANDBOX_HOST` | ⚠️ |
+| [CodeSandbox](https://codesandbox.io) | `codesandbox` | `CSB=true` or `CSB_SANDBOX_ID` (id: `CSB_SANDBOX_ID`) | ✅ |
 | [StackBlitz WebContainer](https://stackblitz.com) | `stackblitz` | `SHELL=/bin/jsh` (heuristic) | ⚠️ |
 | [Google Cloud Shell](https://cloud.google.com/shell) | `cloud-shell` | `CLOUD_SHELL=true` | ⚠️ |
 | [Coder](https://coder.com) | `coder` | `CODER_WORKSPACE_NAME` | ⚠️ |

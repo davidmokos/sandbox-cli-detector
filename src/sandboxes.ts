@@ -133,9 +133,9 @@ export const defaultSandboxes: readonly SandboxDefinition[] = [
     id: "codesandbox",
     name: "CodeSandbox",
     category: "cloud-ide",
-    // TODO: confirm — CSB is believed to be set in CodeSandbox microVMs.
-    env: [{ name: "CSB" }, { name: "CODESANDBOX_HOST" }],
-    verified: false,
+    env: [{ name: "CSB", value: "true" }, { name: "CSB_SANDBOX_ID" }],
+    idEnv: ["CSB_SANDBOX_ID"],
+    verified: true,
   },
   {
     id: "stackblitz",

@@ -60,6 +60,14 @@ describe("detectSandbox", () => {
     expect(detectSandbox({ env: { MODAL_TASK_ID: "ta-1" } }).sandbox?.id).toBe("modal");
   });
 
+  it("detects CodeSandbox via CSB=true or CSB_SANDBOX_ID", () => {
+    expect(detectSandbox({ env: { CSB: "true" } }).sandbox?.id).toBe("codesandbox");
+    const result = detectSandbox({ env: { CSB_SANDBOX_ID: "csb-1" } });
+    expect(result.sandbox?.id).toBe("codesandbox");
+    expect(result.sandbox?.instanceId).toBe("csb-1");
+    expect(detectSandbox({ env: { CSB: "false" } }).detected).toBe(false);
+  });
+
   it("detects Cloudflare Sandbox via CLOUDFLARE_DURABLE_OBJECT_ID", () => {
     const result = detectSandbox({ env: { CLOUDFLARE_DURABLE_OBJECT_ID: "do-1" } });
     expect(result.sandbox?.id).toBe("cloudflare-sandbox");
