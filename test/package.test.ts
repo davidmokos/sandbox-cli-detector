@@ -61,7 +61,7 @@ describe("packaged tarball", () => {
     expect(typeof cjs.detectSandbox).toBe("function");
     expect(typeof cjs.isRunningInSandbox).toBe("function");
     const result = cjs.detectSandbox({ env: { E2B_SANDBOX: "true" } });
-    expect(result.sandbox.id).toBe("e2b");
+    expect(result).toEqual({ detected: true, sandbox: { id: "e2b", name: "E2B" } });
   });
 
   it("types the CommonJS entry as CommonJS under module Node16", () => {
@@ -105,7 +105,7 @@ detectSandbox();
     const esm = await import(pathToFileURL(join(pkgDir, "dist/index.js")).href);
     expect(typeof esm.detectSandbox).toBe("function");
     const result = esm.detectSandbox({ env: { DAYTONA_SANDBOX_ID: "d-1" } });
-    expect(result.sandbox.id).toBe("daytona");
+    expect(result).toEqual({ detected: true, sandbox: { id: "daytona", name: "Daytona" } });
     expect(Array.isArray(esm.defaultSandboxes)).toBe(true);
   });
 
@@ -125,16 +125,14 @@ detectSandbox();
   it("CLI detects a sandbox and exits 0", () => {
     const { stdout, code } = runCli([], { E2B_SANDBOX: "true", E2B_SANDBOX_ID: "sbx_1" });
     expect(code).toBe(0);
-    expect(stdout).toContain("detected: E2B (sbx_1)");
+    expect(stdout).toBe("detected: E2B\n");
   });
 
   it("CLI reports JSON with --json", () => {
     const { stdout, code } = runCli(["--json"], { MODAL_SANDBOX_ID: "sb-1" });
     expect(code).toBe(0);
     const result = JSON.parse(stdout);
-    expect(result.detected).toBe(true);
-    expect(result.sandbox.id).toBe("modal");
-    expect(result.sandbox.instanceId).toBe("sb-1");
+    expect(result).toEqual({ detected: true, sandbox: { id: "modal", name: "Modal" } });
   });
 
   it("CLI exits 1 in a clean environment", () => {

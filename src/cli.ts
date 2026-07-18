@@ -25,11 +25,7 @@ if (!args.has("--quiet")) {
   if (args.has("--json")) {
     console.log(JSON.stringify(result, null, 2));
   } else if (result.sandbox) {
-    const id = result.sandbox.instanceId ? ` (${result.sandbox.instanceId})` : "";
-    console.log(`detected: ${result.sandbox.name}${id}`);
-    for (const match of result.matches.slice(1)) {
-      console.log(`also matched: ${match.name}`);
-    }
+    console.log(`detected: ${result.sandbox.name}`);
   } else {
     console.log("no sandbox detected");
   }
