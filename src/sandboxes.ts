@@ -2,14 +2,14 @@ import type { SandboxDefinition } from "./types.js";
 
 export const defaultSandboxes = [
   {
+    id: "replit",
+    name: "Replit",
+    env: [{ name: "REPLIT_SESSION" }, { name: "REPLIT_CONTAINER" }, { name: "REPLIT_USER" }],
+  },
+  {
     id: "bolt",
     name: "bolt.new",
     env: [{ name: "BOLT_ENV" }, { name: "BOLT_ORIGIN" }, { name: "BOLT_SERVER_URL" }],
-  },
-  {
-    id: "rork",
-    name: "Rork",
-    env: [{ name: "RORK_API_URL" }],
   },
   {
     id: "e2b",

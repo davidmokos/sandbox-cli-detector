@@ -1,8 +1,14 @@
 # sandbox-cli-detector
 
-Detect whether a JavaScript CLI is running inside a sandboxed environment.
+Detect whether the current process is running inside a sandboxed developer
+environment.
 
-Please open an issue if a sandbox is missing or incorrectly detected.
+Please [open an issue](https://github.com/davidmokos/sandbox-cli-detector/issues/new)
+if your sandbox is not properly detected.
+
+[![npm](https://img.shields.io/npm/v/sandbox-cli-detector.svg)](https://www.npmjs.com/package/sandbox-cli-detector)
+[![Tests](https://github.com/davidmokos/sandbox-cli-detector/actions/workflows/test.yml/badge.svg)](https://github.com/davidmokos/sandbox-cli-detector/actions/workflows/test.yml)
+[![License](https://img.shields.io/npm/l/sandbox-cli-detector.svg)](LICENSE)
 
 ## Installation
 
@@ -17,77 +23,68 @@ import { detectSandbox } from "sandbox-cli-detector";
 
 const result = detectSandbox();
 
-if (result.detected) {
-  console.log("Sandbox:", result.sandbox?.name);
+if (result.detected && result.sandbox) {
+  console.log("The name of the sandbox is:", result.sandbox.name);
 } else {
-  console.log("Not running inside a known sandbox");
+  console.log("This program is not running inside a known sandbox");
 }
 ```
-
-When a sandbox is detected, the result contains its stable id and display name:
-
-```json
-{
-  "detected": true,
-  "sandbox": {
-    "id": "e2b",
-    "name": "E2B"
-  }
-}
-```
-
-When no sandbox is detected, the result is `{ "detected": false }`.
 
 ## Supported sandboxes
 
-| Name | ID | Detection environment variables |
-| --- | --- | --- |
-| [bolt.new](https://bolt.new) | `bolt` | `BOLT_ENV`, `BOLT_ORIGIN`, or `BOLT_SERVER_URL` |
-| [Rork](https://rork.com) | `rork` | `RORK_API_URL` |
-| [E2B](https://e2b.dev) | `e2b` | `E2B_SANDBOX=true` |
-| [Vercel Sandbox](https://vercel.com/docs/sandbox) | `vercel-sandbox` | `HOME=/home/vercel-sandbox` |
-| [Daytona](https://daytona.io) | `daytona` | `DAYTONA_SANDBOX_ID` |
-| [Modal](https://modal.com) | `modal` | `MODAL_SANDBOX_ID` or `MODAL_TASK_ID` |
-| [Cloudflare Sandbox](https://developers.cloudflare.com/sandbox/) | `cloudflare-sandbox` | `CLOUDFLARE_DURABLE_OBJECT_ID` |
-| [GitHub Codespaces](https://github.com/features/codespaces) | `codespaces` | `CODESPACES=true` |
-| [CodeSandbox](https://codesandbox.io) | `codesandbox` | `CSB=true` or `CSB_SANDBOX_ID` |
+Officially supported sandbox environments:
 
-Detection uses environment variables. If multiple sandboxes match, the first
-definition in `defaultSandboxes` is returned.
+| Name | ID |
+| --- | --- |
+| [Replit](https://replit.com) | `replit` |
+| [bolt.new](https://bolt.new) | `bolt` |
+| [E2B](https://e2b.dev) | `e2b` |
+| [Vercel Sandbox](https://vercel.com/docs/sandbox) | `vercel-sandbox` |
+| [Daytona](https://daytona.io) | `daytona` |
+| [Modal](https://modal.com) | `modal` |
+| [Cloudflare Sandbox](https://developers.cloudflare.com/sandbox/) | `cloudflare-sandbox` |
+| [GitHub Codespaces](https://github.com/features/codespaces) | `codespaces` |
+| [CodeSandbox](https://codesandbox.io) | `codesandbox` |
+
+Detection is data-driven. The exact environment variables for each sandbox
+live in [`src/sandboxes.ts`](src/sandboxes.ts).
 
 ## API
 
 ### `detectSandbox(options?)`
 
-Returns a `DetectionResult`:
+Returns a detection result:
 
 ```ts
-interface DetectionResult {
-  detected: boolean;
-  sandbox?: {
-    id: string;
-    name: string;
-  };
+{
+  detected: true,
+  sandbox: {
+    id: "e2b",
+    name: "E2B"
+  }
 }
 ```
 
-`sandbox.id` is stable and intended for programmatic checks. `sandbox.name` is
-display text and may change.
+When no sandbox is detected, it returns `{ detected: false }`.
 
-Options:
+### `result.detected`
 
-```ts
-interface DetectSandboxOptions {
-  env?: NodeJS.ProcessEnv;
-  sandboxes?: readonly SandboxDefinition[];
-}
-```
+A boolean that is `true` when the process is running inside a known sandbox and
+`false` otherwise.
 
-`env` defaults to `process.env`. `sandboxes` defaults to `defaultSandboxes`.
+### `result.sandbox.id`
+
+A stable identifier for the detected sandbox. Prefer comparing this value over
+`result.sandbox.name`.
+
+### `result.sandbox.name`
+
+The display name of the detected sandbox. This may change without it being a
+breaking change.
 
 ### `isRunningInSandbox(options?)`
 
-Returns the detection result as a boolean:
+A convenience function that returns `result.detected` as a boolean:
 
 ```ts
 import { isRunningInSandbox } from "sandbox-cli-detector";
@@ -117,22 +114,20 @@ const result = detectSandbox({
 ```
 
 Each environment signal matches either an exact `value` or any non-empty value
-when `value` is omitted.
+when `value` is omitted. If multiple sandboxes match, the first definition is
+returned.
 
 ## CLI
 
+The package also ships a CLI:
+
 ```sh
 npx sandbox-cli-detector
-# detected: E2B
-
 npx sandbox-cli-detector --json
-# prints the DetectionResult as JSON
-
 npx sandbox-cli-detector --quiet
-# no output, exit code only
 ```
 
-The CLI exits with `0` when a sandbox is detected and `1` otherwise.
+It exits with `0` when a sandbox is detected and `1` otherwise.
 
 ## Contributing detections
 
@@ -141,4 +136,4 @@ platform, and the variables that identify it.
 
 ## License
 
-MIT
+[MIT](LICENSE)

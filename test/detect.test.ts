@@ -27,8 +27,10 @@ describe("detectSandbox", () => {
   });
 
   it.each([
+    ["replit", { REPLIT_SESSION: "session-1" }],
+    ["replit", { REPLIT_CONTAINER: "container-1" }],
+    ["replit", { REPLIT_USER: "david" }],
     ["bolt", { BOLT_ENV: "production" }],
-    ["rork", { RORK_API_URL: "https://api.rork.com" }],
     ["vercel-sandbox", { HOME: "/home/vercel-sandbox" }],
     ["daytona", { DAYTONA_SANDBOX_ID: "daytona-1" }],
     ["modal", { MODAL_SANDBOX_ID: "modal-1" }],
@@ -43,22 +45,12 @@ describe("detectSandbox", () => {
 
   it("reports the first matching sandbox", () => {
     const result = detectSandbox({
-      env: { RORK_API_URL: "https://api.rork.com", E2B_SANDBOX: "true" },
+      env: { REPLIT_SESSION: "session-1", E2B_SANDBOX: "true" },
     });
 
     expect(result).toEqual({
       detected: true,
-      sandbox: { id: "rork", name: "Rork" },
-    });
-  });
-
-  it("reports Replit environments as E2B only when the E2B marker is present", () => {
-    expect(detectSandbox({ env: { REPLIT_SESSION: "session-1" } })).toEqual({ detected: false });
-    expect(
-      detectSandbox({ env: { REPLIT_SESSION: "session-1", E2B_SANDBOX: "true" } }),
-    ).toEqual({
-      detected: true,
-      sandbox: { id: "e2b", name: "E2B" },
+      sandbox: { id: "replit", name: "Replit" },
     });
   });
 
