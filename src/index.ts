@@ -1,51 +1,39 @@
 import { defaultSandboxes } from "./sandboxes.js";
-import { createDefaultStrategies } from "./strategies.js";
-import type { DetectedSandbox, DetectionResult, DetectSandboxOptions } from "./types.js";
+import type { DetectSandboxOptions, DetectionResult, EnvSignal } from "./types.js";
 
 export { defaultSandboxes } from "./sandboxes.js";
-export { createDefaultStrategies, EnvironmentDetectionStrategy } from "./strategies.js";
 export type {
   DetectedSandbox,
-  DetectionContext,
-  DetectionEvidence,
   DetectionResult,
-  DetectionStrategy,
   DetectSandboxOptions,
-  EnvCondition,
-  EnvMatcher,
-  SandboxCategory,
+  EnvSignal,
   SandboxDefinition,
 } from "./types.js";
 
-/**
- * Detect whether the current process runs inside a known sandboxed
- * environment (AI code-execution sandbox, AI app builder, or cloud IDE).
- */
 export function detectSandbox(options: DetectSandboxOptions = {}): DetectionResult {
   const env = options.env ?? process.env;
   const sandboxes = options.sandboxes ?? defaultSandboxes;
-  const strategies = options.strategies ?? createDefaultStrategies();
-  const context = { env };
+  const sandbox = sandboxes.find((candidate) =>
+    candidate.env.some((signal) => matchesEnvSignal(signal, env)),
+  );
 
-  const matches: DetectedSandbox[] = [];
-  for (const sandbox of sandboxes) {
-    for (const strategy of strategies) {
-      const detected = strategy.detect(sandbox, context);
-      if (detected) {
-        matches.push(detected);
-        break;
-      }
-    }
-  }
+  if (sandbox === undefined) return { detected: false };
 
   return {
-    detected: matches.length > 0,
-    sandbox: matches[0] ?? null,
-    matches,
+    detected: true,
+    sandbox: { id: sandbox.id, name: sandbox.name },
   };
 }
 
-/** Convenience wrapper returning just the boolean. */
 export function isRunningInSandbox(options: DetectSandboxOptions = {}): boolean {
   return detectSandbox(options).detected;
+}
+
+function matchesEnvSignal(signal: EnvSignal, env: NodeJS.ProcessEnv): boolean {
+  const value = env[signal.name];
+  return (
+    value !== undefined &&
+    value !== "" &&
+    (signal.value === undefined || value === signal.value)
+  );
 }
